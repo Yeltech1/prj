@@ -112,3 +112,58 @@ L'Expected Shortfall (ou VaR conditionnelle) mesure l'espérance de la perte sac
     \text{ES}_{\alpha} = E[\text{Perte} \mid \text{Perte} > \text{VaR}_{\alpha}]
 \end{equation}
 L'Expected Shortfall est particulièrement sensible aux « queues épaisses » et donne une image beaucoup plus réaliste du risque de perte extrême sur les marchés financiers modernes.
+
+\section{La Finance Comportementale et l'Analyse des Anomalies}
+Pendant plusieurs décennies, la théorie financière dominante a reposé sur le paradigme de l'investisseur rationnel (l'\textit{Homo Economicus}) et l'efficience des marchés. Cependant, l'observation empirique des marchés financiers a révélé de nombreuses anomalies (bulles spéculatives, krachs, sous-évaluation ou sur-évaluation persistante de certains actifs) que ces modèles rationnels peinent à expliquer. La **Finance Comportementale** est née pour combler ce fossé en intégrant les apports de la psychologie cognitive à l'analyse financière.
+
+\subsection{La Théorie des Perspectives (Prospect Theory)}
+Développée par Daniel Kahneman et Amos Tversky en 1979, la **Théorie des Perspectives** remplace la théorie de l'utilité attendue classique. Elle montre que les individus évaluent les gains et les pertes de manière asymétrique :
+\begin{itemize}
+    \item \textbf{L'aversion aux pertes :} Les individus ressentent plus douloureusement une perte qu'ils ne se réjouissent d'un gain d'un montant équivalent (généralement estimé à un ratio de 2 pour 1). Cette aversion asymétrique pousse les investisseurs à conserver trop longtemps leurs actifs perdants dans l'espoir de « refaire leur retard » (effet de disposition).
+    \item \textbf{L'évaluation par rapport à un point de référence :} Au lieu d'évaluer leur richesse globale absolue, les individus jugent les résultats en termes de variations (gains ou pertes) par rapport à un point de référence (souvent le prix d'achat d'un actif).
+    \item \textbf{La sensibilité décroissante :} La différence subjective d'utilité entre un gain de 100 \$ et 200 \$ est perçue comme plus grande qu'entre un gain de 1100 \$ et 1200 \$.
+\end{itemize}
+
+\subsection{Biais Cognitifs et Comportementaux}
+Les investisseurs réels sont soumis à de nombreux biais psychologiques qui influencent leurs décisions d'allocation de portefeuille :
+\begin{enumerate}
+    \item \textbf{Le comportement grégaire (Herd Behavior) :} Tendance des investisseurs à imiter les actions de la majorité. Ce biais est le principal moteur des bulles spéculatives (comme la bulle Internet ou celle des crypto-actifs) et des krachs de marché paniques.
+    \item \textbf{La sur-confiance (Overconfidence) :} Les investisseurs surestiment souvent leurs propres capacités d'analyse et la précision de leurs prévisions, ce qui les conduit à multiplier les transactions (augmentant les coûts de transaction) et à sous-estimer le risque.
+    \item \textbf{Le biais d'ancrage :} Tendance à accorder une importance disproportionnée à la première information reçue (comme le prix historique maximal d'une action) pour prendre des décisions ultérieures.
+\end{enumerate}
+
+Ces biais psychologiques collectifs perturbent le processus rationnel d'ajustement des cours, créant des inefficiences temporelles locales et des tendances répétitives (patterns). Ce sont précisément ces anomalies comportementales non-linéaires que les algorithmes d'apprentissage profond (comme les réseaux LSTM) cherchent à identifier et à exploiter pour générer de l'alpha.
+
+\section{Modélisation de la Volatilité : Modèles GARCH}
+Dans les modèles financiers traditionnels (comme la MPT de Markowitz), la volatilité est souvent supposée constante dans le temps. En réalité, les séries financières affichent un phénomène connu sous le nom de **regroupement de volatilité** (volatility clustering), théorisé par Mandelbrot en 1963 : « de grandes variations tendent à être suivies par de grandes variations, et de petites variations par de petites variations ». En d'autres termes, la volatilité fluctue dans le temps et présente une forte dépendance temporelle.
+
+Pour modéliser cette dynamique, Robert Engle (1982) a introduit le modèle **ARCH** (Autoregressive Conditional Heteroskedasticity), étendu plus tard par Tim Bollerslev (1986) sous le nom de modèle **GARCH** (Generalized Autoregressive Conditional Heteroskedasticity).
+
+\subsection{Formulation Mathématique du GARCH(1,1)}
+Soit $r_t$ le rendement d'un actif à l'instant $t$. On peut le modéliser comme suit :
+\begin{equation}
+    r_t = \mu_t + \epsilon_t
+\end{equation}
+où $\mu_t$ est le rendement conditionnel moyen et $\epsilon_t$ est le résidu (l'innovation). L'innovation $\epsilon_t$ s'écrit :
+\begin{equation}
+    \epsilon_t = \sigma_t z_t
+\end{equation}
+où $z_t$ est une variable aléatoire indépendante et identiquement distribuée (i.i.d.) de moyenne nulle et de variance égale à 1, et $\sigma_t$ représente la volatilité conditionnelle à l'instant $t$.
+
+Dans le modèle standard **GARCH(1,1)**, la variance conditionnelle $\sigma_t^2$ est modélisée comme une fonction linéaire de la variance conditionnelle passée (terme GARCH) et du carré du résidu passé (terme ARCH) :
+\begin{equation}
+    \sigma_t^2 = \omega + \alpha \epsilon_{t-1}^2 + \beta \sigma_{t-1}^2
+\end{equation}
+sous les contraintes suivantes pour garantir une variance strictement positive et stationnaire :
+\begin{equation}
+    \omega > 0, \quad \alpha \ge 0, \quad \beta \ge 0, \quad \text{et} \quad \alpha + \beta < 1
+\end{equation}
+Chaque paramètre joue un rôle précis :
+\begin{itemize}
+    \item $\omega$ représente le niveau de variance de base (à long terme).
+    \item $\alpha$ mesure l'impact des chocs de rendement récents sur la volatilité actuelle (effet de court terme).
+    \item $\beta$ mesure la persistance de la volatilité passée (effet de long terme). Si $\beta$ est proche de 1, les chocs de volatilité mettront beaucoup de temps à s'estomper.
+    \item Le terme $\alpha + \beta$ représente le taux de retour à la moyenne. S'il est très proche de 1, la volatilité est hautement persistante.
+\end{itemize}
+
+La modélisation de la volatilité dynamique via des approches de type GARCH ou par apprentissage profond permet de concevoir des matrices de covariance conditionnelles dynamiques, rendant l'optimiseur de portefeuille beaucoup plus robuste face aux brusques pics de risque du marché.
