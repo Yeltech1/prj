@@ -246,3 +246,25 @@ Ce processus de division et de répartition du capital est répété récursivem
 
 L'avantage majeur de HRP est qu'il alloue les poids de manière stable et intuitive, en protégeant le portefeuille contre la concentration excessive sur des clusters d'actifs fortement corrélés (par exemple, en évitant d'allouer trop de capital à un ensemble d'actions technologiques corrélées). De plus, l'absence de besoin d'inverser la matrice de covariance rend la méthode extrêmement robuste aux erreurs d'estimation empiriques.
 
+\subsection{Synthèse Comparative des Modèles d'Allocation}
+Le tableau \ref{tab:synthese_modeles} propose une synthèse des différences fondamentales entre l'optimisation classique de Markowitz, le modèle bayésien de Black-Litterman, et l'approche hiérarchique HRP.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{3.5cm}p{3.5cm}p{3.8cm}p{3.8cm}}
+\toprule
+\textbf{Caractéristique} & \textbf{Markowitz (MPT)} & \textbf{Black-Litterman} & \textbf{Hierarchical Risk Parity (HRP)} \\
+\midrule
+\textbf{Données requises} & Rendements historiques espérés, matrice de covariance & Matrice de covariance, poids du marché, opinions de l'investisseur & Matrice de covariance uniquement (pas de rendements) \\
+\textbf{Opération mathématique clé} & Inversion de la matrice de covariance ($\Sigma^{-1}$) & Inversion combinée de la covariance et des opinions & Clustering hiérarchique et bisection récursive \\
+\textbf{Sensibilité au bruit} & Très élevée (effet GIGO) & Modérée (régularisée par le prior du marché) & Faible (pas d'inversion matricielle) \\
+\textbf{Traitement de la corrélation} & Indifférencié & Indifférencié & Structuration en clusters de risque \\
+\textbf{Poids extrêmes} & Fréquents (long-short agressifs) & Rares (ajustements autour du marché) & Absents (contraintes intrinsèques) \\
+\bottomrule
+\end{tabular}
+\caption{Comparaison des approches d'optimisation et d'allocation de portefeuille}
+\label{tab:synthese_modeles}
+\end{table}
+
+
