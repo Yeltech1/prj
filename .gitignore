@@ -1,0 +1,24 @@
+# Fichiers auxiliaires LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.pdf
+
+# Python et données
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+data/raw/
+data/logs/
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db

@@ -1,0 +1,78 @@
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+
+Avant d'entamer le cœur de ce travail, il m'est particulièrement agréable d'exprimer ma profonde gratitude et mes sincères remerciements à toutes les personnes qui ont contribué, de près ou de loin, à l'aboutissement de ce Projet de Fin d'Études.
+
+Je tiens tout d'abord à adresser mes remerciements les plus sincères à mon encadrant pédagogique, \textbf{Mr. ALAOUI Mly Rachid}. Ses précieux conseils, ses directives éclairées, sa disponibilité constante malgré ses nombreux engagements, ainsi que sa rigueur scientifique ont été les piliers de la réussite de ce projet. Son accompagnement bienveillant, son expertise technique et sa confiance m'ont permis de surmonter de nombreux obstacles tout au long de cette aventure. Qu'il trouve ici l'expression de mon profond respect et de ma reconnaissance la plus sincère.
+
+Mes remerciements s'adressent également à l'ensemble du corps professoral et administratif de la Faculté des Sciences Juridiques, Économiques et Sociales d'Aïn Sebaâ (FSJESAS), Université Hassan II de Casablanca, pour la qualité de l'enseignement qui m'a été prodigué durant tout mon cursus universitaire. Leurs enseignements m'ont doté des solides compétences méthodologiques et quantitatives nécessaires pour aborder ce travail avec sérénité et ambition.
+
+Je remercie chaleureusement les membres du jury d'avoir accepté d'évaluer ce travail de fin d'études. Leurs remarques, leurs commentaires avisés et leurs critiques constructives seront pour moi une source d'enrichissement précieuse et guideront sans doute mes futurs travaux de recherche.
+
+Enfin, je dédie une pensée toute particulière à mes parents et à ma famille pour leur soutien moral indéfectible, leurs encouragements quotidiens et leur patience infinie durant ces mois de travail intensif. Ce modeste rapport est le fruit de leur affection inestimable et de leurs sacrifices. Que toutes les personnes qui ont contribué de près ou de loin à la réussite de ce travail trouvent ici le témoignage de ma profonde gratitude.
+
+\newpage
+
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+La gestion de portefeuille a connu une évolution majeure avec l'avènement des technologies d'Intelligence Artificielle (IA) et du Deep Learning. Ce projet de fin d'études compare l'approche d'optimisation classique de la Théorie Moderne du Portefeuille de Harry Markowitz avec des stratégies d'allocation d'actifs assistées par des modèles d'apprentissage profond. 
+
+Nous présentons une méthodologie hybride novatrice combinant le pouvoir prédictif des réseaux de neurones récurrents de type \textbf{LSTM (Long Short-Term Memory)} avec la rigueur d'un optimiseur Moyenne-Variance. Le modèle LSTM est entraîné sur 10 ans de données historiques (2015-2024) pour prédire les rendements de grands actifs américains (Apple, Microsoft, Google, JPMorgan, Procter \& Gamble). Ces prédictions dynamiques remplacent les rendements historiques statiques dans l'algorithme d'allocation d'actifs.
+
+Les résultats de la simulation de backtesting (2023-2024) démontrent que notre stratégie hybride surperforme significativement le marché de référence (S\&P 500) ainsi que la stratégie classique de Markowitz. Le portefeuille assisté par IA enregistre un rendement cumulé supérieur tout en maintenant un profil de risque maîtrisé, ce qui se traduit par une hausse notable du Ratio de Sharpe et une réduction des drawdowns maximaux lors des phases de correction de marché.
+
+\textbf{Mots-clés :} Optimisation de Portefeuille, Markowitz, Intelligence Artificielle, LSTM, Deep Learning, Backtesting, Ratio de Sharpe, Marchés Financiers.
+
+\newpage
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Portfolio management has undergone a major paradigm shift with the emergence of Artificial Intelligence (AI) and Deep Learning technologies. This graduation project compares the classical portfolio optimization approach of Harry Markowitz's Modern Portfolio Theory (MPT) with asset allocation strategies enhanced by deep learning models.
+
+We present an innovative hybrid methodology combining the predictive power of Recurrent Neural Networks, specifically \textbf{LSTM (Long Short-Term Memory)} networks, with the analytical framework of a Mean-Variance optimizer. The LSTM model is trained on 10 years of historical data (2015-2024) to predict the returns of major US equities (Apple, Microsoft, Google, JPMorgan Chase, Procter \& Gamble). These dynamic predictions replace the static historical returns in the asset allocation algorithm.
+
+The backtesting simulation results (2023-2024) demonstrate that our hybrid strategy significantly outperforms both the benchmark index (S\&P 500) and the classical Markowitz strategy. The AI-assisted portfolio achieves higher cumulative returns while maintaining a controlled risk profile, resulting in a notable increase in the Sharpe Ratio and a reduction in maximum drawdowns during market corrections.
+
+\textbf{Keywords:} Portfolio Optimization, Markowitz, Artificial Intelligence, LSTM, Deep Learning, Backtesting, Sharpe Ratio, Financial Markets.
+
+\newpage
+
+% ================= TABLES DE MATIÈRES =================
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+% ================= LISTE DES ABRÉVIATIONS =================
+\chapter*{Liste des Abréviations}
+\addcontentsline{toc}{chapter}{Liste des Abréviations}
+
+\begin{description}
+    \item[ADF] Augmented Dickey-Fuller (Test de stationnarité)
+    \item[API] Application Programming Interface
+    \item[ARIMA] AutoRegressive Integrated Moving Average
+    \item[CAPM] Capital Asset Pricing Model
+    \item[CML] Capital Market Line (Droite de Marché des Capitaux)
+    \item[DRL] Deep Reinforcement Learning
+    \item[EMH] Efficient Market Hypothesis (Hypothèse d'Efficience du Marché)
+    \item[ES] Expected Shortfall
+    \item[FSJESAS] Faculté des Sciences Juridiques, Économiques et Sociales d'Aïn Sebaâ
+    \item[IA] Intelligence Artificielle
+    \item[LSTM] Long Short-Term Memory
+    \item[MEDAF] Modèle d'Évaluation des Actifs Financiers
+    \item[ML] Machine Learning
+    \item[MPT] Modern Portfolio Theory (Théorie Moderne du Portefeuille)
+    \item[MSE] Mean Squared Error (Erreur Quadratique Moyenne)
+    \item[OPCVM] Organisme de Placement Collectif en Valeurs Mobilières
+    \item[RMSE] Root Mean Square Error
+    \item[RNN] Recurrent Neural Network (Réseau de neurones récurrents)
+    \item[RSI] Relative Strength Index
+    \item[S\&P 500] Standard \& Poor's 500
+    \item[SMA] Simple Moving Average
+    \item[SML] Security Market Line (Droite de Marché des Titres)
+    \item[VaR] Value at Risk
+\end{description}

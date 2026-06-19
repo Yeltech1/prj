@@ -1,0 +1,114 @@
+\chapter{Marchés Financiers et Fondements de la Gestion de Portefeuille}
+
+\section{Introduction aux Marchés Financiers}
+Les marchés financiers constituent le cœur du système économique mondial. Ils jouent un rôle fondamental d'intermédiation financière en permettant la rencontre entre deux types d'agents économiques : les agents à besoin de financement (généralement les entreprises et les États) et les agents à capacité de financement (les épargnants, les banques, les compagnies d'assurance et les fonds de pension). Cette allocation des ressources financières permet de financer les investissements productifs, de stimuler la croissance économique et d'offrir des opportunités de rendement aux investisseurs.
+
+\section{Typologie des Actifs Financiers et Diversification}
+Un portefeuille désigne l'ensemble des actifs financiers détenus par un investisseur individuel ou institutionnel. La composition d'un portefeuille peut être extrêmement variée, comprenant plusieurs classes d'actifs :
+
+\begin{itemize}
+    \item \textbf{Les Actions (Equity) :} Titres de propriété représentant une fraction du capital d'une entreprise. Ils confèrent à leur détenteur des droits politiques (droit de vote aux assemblées générales) et des droits financiers (droit de percevoir une part des bénéfices sous forme de dividendes). Les actions offrent un potentiel de rendement élevé à long terme, mais s'accompagnent d'un risque élevé en raison de la volatilité des cours et de l'absence de garantie en capital.
+    \item \textbf{Les Obligations (Fixed Income) :} Titres de créance émis par des entreprises ou des entités publiques (États, collectivités) pour emprunter des capitaux sur les marchés. L'émetteur s'engage à verser régulièrement un intérêt (le coupon) et à rembourser le capital à une date d'échéance fixée (la maturité). Les obligations sont considérées comme moins risquées que les actions, mais leurs rendements sont généralement plus modestes et dépendent de la qualité de signature de l'émetteur (risque de crédit) et de l'évolution des taux d'intérêt (risque de taux).
+    \item \textbf{Les Indices Boursiers :} Paniers d'actifs représentatifs d'un marché ou d'un secteur d'activité (ex : S\&P 500 pour les grandes capitalisations américaines, CAC 40 pour la France, NASDAQ pour la technologie). Ils permettent de suivre la tendance générale et de servir de référence (benchmark) pour évaluer la performance des portefeuilles gérés de manière active.
+    \item \textbf{Les Organismes de Placement Collectif en Valeurs Mobilières (OPCVM) :} Véhicules d'investissement (Sicav, FCP) qui regroupent l'épargne de nombreux investisseurs pour la placer dans un portefeuille diversifié géré par des professionnels. Ils facilitent l'accès aux marchés financiers pour les particuliers.
+\end{itemize}
+
+Le concept clé sous-jacent à la gestion de portefeuille est la \textbf{diversification}. Formulé de manière populaire par l'adage « il ne faut pas mettre tous ses œufs dans le même panier », ce concept a été formalisé mathématiquement par Harry Markowitz. La diversification permet de réduire le risque global du portefeuille sans nécessairement sacrifier son rendement espéré, en exploitant le fait que les prix des différents actifs ne fluctuent pas de manière parfaitement synchronisée.
+
+\section{Modélisation Mathématique du Rendement}
+Pour analyser la performance d'un portefeuille, il convient tout d'abord de définir mathématiquement la notion de rendement. Le rendement mesure la variation relative de la valeur d'un actif sur une période donnée. Il existe deux manières principales de formuler cette variation.
+
+\subsection{Le Rendement Discret (Simple)}
+Le rendement discret ou arithmétique d'un actif $i$ sur la période allant de $t-1$ à $t$ est défini par :
+\begin{equation}
+    R_{i,t} = \frac{P_{i,t} - P_{i,t-1} + D_{i,t}}{P_{i,t-1}}
+\end{equation}
+où $P_{i,t}$ représente le prix de l'actif à l'instant $t$ et $D_{i,t}$ représente les éventuels revenus distribués (comme les dividendes) au cours de la période. Si l'on néglige les revenus distribués, la formule se simplifie :
+\begin{equation}
+    R_{i,t} = \frac{P_{i,t}}{P_{i,t-1}} - 1
+\end{equation}
+Le rendement discret d'un portefeuille composé de $n$ actifs est simplement la moyenne pondérée des rendements des actifs individuels :
+\begin{equation}
+    R_{p,t} = \sum_{i=1}^{n} w_i R_{i,t}
+\end{equation}
+où $w_i$ représente la proportion de la richesse allouée à l'actif $i$ (le poids de l'actif), avec la contrainte $\sum_{i=1}^{n} w_i = 1$.
+
+\subsection{Le Rendement Continu (Logarithmique)}
+En finance quantitative et en modélisation économétrique, on préfère souvent utiliser le rendement continu ou logarithmique, défini par :
+\begin{equation}
+    r_{i,t} = \ln\left(\frac{P_{i,t}}{P_{i,t-1}}\right) = \ln(P_{i,t}) - \ln(P_{i,t-1})
+\end{equation}
+Le rendement logarithmique présente des propriétés mathématiques particulièrement avantageuses :
+\begin{enumerate}
+    \item \textbf{L'additivité temporelle :} Le rendement logarithmique sur $k$ périodes est simplement la somme des rendements logarithmiques de chaque période unitaire :
+    \begin{equation}
+        r_{i,t}^{(k)} = \ln\left(\frac{P_{i,t}}{P_{i,t-k}}\right) = \sum_{j=0}^{k-1} r_{i,t-j}
+    \end{equation}
+    Cette propriété n'est pas vérifiée par les rendements discrets, car $(1 + R_{t}^{(k)}) = \prod_{j=0}^{k-1} (1 + R_{t-j})$.
+    \item \textbf{La normalité statistique :} Pour de courtes périodes (comme des données journalières), les variations de prix sont petites, et le rendement continu est une très bonne approximation du rendement simple ($r_t \approx R_t$). De plus, les rendements logarithmiques se prêtent mieux à l'hypothèse de normalité en raison du théorème central limite appliqué aux sommes de variables aléatoires.
+    \item \textbf{La symétrie face aux variations extrêmes :} Un rendement discret est limité inférieurement à -100\% (perte totale), mais illimité supérieurement. Le rendement logarithmique varie quant à lui sur l'intervalle $]-\infty, +\infty[$, ce qui le rend plus adapté aux modélisations statistiques basées sur des distributions symétriques.
+\end{enumerate}
+
+Toutefois, contrairement aux rendements discrets, le rendement logarithmique d'un portefeuille n'est pas la moyenne pondérée des rendements logarithmiques des actifs individuels. On doit donc souvent passer de l'un à l'autre lors des phases d'agrégation d'actifs.
+
+\section{Modélisation Mathématique du Risque}
+En finance classique, le risque est intrinsèquement lié à l'incertitude sur la valeur future d'un actif. Plus les fluctuations possibles d'un cours sont larges, plus le risque est élevé. La mesure statistique de cette dispersion est la variance ($\sigma^2$) ou l'écart-type ($\sigma$), couramment appelée \textbf{volatilité} dans le jargon financier.
+
+Pour un actif dont les rendements historiques sur $T$ périodes sont notés $R_1, R_2, \dots, R_T$, le rendement moyen historique est calculé par :
+\begin{equation}
+    \bar{R} = \frac{1}{T} \sum_{t=1}^{T} R_t
+\end{equation}
+La variance historique, qui mesure la dispersion des rendements autour de leur moyenne, est donnée par :
+\begin{equation}
+    \sigma^2 = \frac{1}{T-1} \sum_{t=1}^{T} (R_t - \bar{R})^2
+\end{equation}
+La volatilité historique $\sigma$ est l'écart-type, soit la racine carrée de la variance :
+\begin{equation}
+    \sigma = \sqrt{\sigma^2}
+\end{equation}
+La volatilité est généralement annualisée pour permettre la comparaison entre différentes classes d'actifs ou différentes fréquences d'observation. Si l'on dispose de données journalières et que l'on suppose qu'une année compte 252 jours de bourse (trading days), la volatilité annualisée s'obtient par la formule :
+\begin{equation}
+    \sigma_{\text{annuel}} = \sigma_{\text{journalier}} \times \sqrt{252}
+\end{equation}
+De même, pour des données hebdomadaires (52 semaines) ou mensuelles (12 mois), on multipliera respectivement par $\sqrt{52}$ ou $\sqrt{12}$.
+
+\section{L'Hypothèse d'Efficience des Marchés}
+L'un des piliers de la théorie financière classique est l'Hypothèse d'Efficience des Marchés (EMH), formalisée par Eugène Fama en 1970. Selon cette théorie, un marché financier est dit efficient si les cours des titres cotés y reflètent à tout moment toute l'information disponible. Sur un tel marché, il est impossible de surperformer systématiquement le marché à risque équivalent, car les inefficiences de prix sont immédiatement arbitrées par les investisseurs rationnels.
+
+Fama distingue trois formes d'efficience selon la nature de l'information prise en compte :
+
+\begin{enumerate}
+    \item \textbf{La forme faible (Weak form) :} Les cours passés des actifs ne contiennent aucune information utile pour prédire leurs cours futurs. Toute l'information historique est déjà intégrée dans le prix actuel. En conséquence, l'analyse technique (qui repose sur l'étude des graphiques historiques de cours) est stérile. Les cours suivent une « marche au hasard » (Random Walk) :
+    \begin{equation}
+        P_t = P_{t-1} + \epsilon_t
+    \end{equation}
+    où $\epsilon_t$ est un bruit blanc de moyenne nulle et non corrélé.
+    \item \textbf{La forme semi-forte (Semi-strong form) :} Les cours intègrent non seulement l'historique des prix, mais également toute l'information publique disponible (rapports financiers des entreprises, statistiques macroéconomiques, actualités géopolitiques, etc.). Les cours s'ajustent instantanément et sans biais à l'annonce de toute nouvelle information publique. L'analyse fondamentale devient alors inefficace pour battre le marché.
+    \item \textbf{La forme forte (Strong form) :} Les cours intègrent l'ensemble des informations publiques et privées (notamment les informations privilégiées ou d'initiés). Dans ce cadre extrême, même les personnes disposant d'informations confidentielles internes ne peuvent pas obtenir de rendements anormaux.
+\end{enumerate}
+
+\subsection{Anomalies de marché et Finance Comportementale}
+L'hypothèse d'efficience a été vivement critiquée. L'existence d'anomalies de marché (l'effet de taille, l'effet calendrier comme « l'effet janvier », ou l'effet momentum) contredit la théorie de Fama. De plus, la finance comportementale (portée par Daniel Kahneman et Amos Tversky) a démontré que les investisseurs réels ne sont pas strictement rationnels. Ils sont soumis à des biais cognitifs (aversion à la perte, sur-confiance, comportement grégaire) qui créent des bulles spéculatives et des krachs irrationnels. Ces inefficiences locales ouvrent la voie à l'utilisation d'algorithmes avancés, comme l'Intelligence Artificielle, capables de détecter des micro-tendances comportementales complexes.
+
+\section{Limites de la Finance Classique et Mesures de Risque Avancées}
+La finance classique postule souvent que les rendements financiers suivent une loi normale (distribution gaussienne). Bien que ce postulat simplifie grandement les calculs mathématiques, il est démenti par la réalité empirique. Les rendements financiers réels présentent :
+\begin{itemize}
+    \item \textbf{L'asymétrie (Skewness) :} La distribution des rendements est souvent asymétrique négativement, signifiant que les baisses extrêmes sont plus fréquentes que les hausses extrêmes.
+    \item \textbf{L'aplatissement (Kurtosis) élevé :} Les distributions réelles sont leptokurtiques, caractérisées par des sommets plus pointus et des « queues épaisses » (fat tails) par rapport à la loi normale. Cela implique que la probabilité d'événements extrêmes (« cygnes noirs ») est largement sous-estimée par les modèles gaussiens.
+\end{itemize}
+
+Pour pallier ces faiblesses, des mesures de risque plus adaptées ont été développées.
+
+\subsection{La Value-at-Risk (VaR)}
+La Value-at-Risk représente la perte maximale qu'un portefeuille peut subir sur un horizon temporel donné ($T$) avec un niveau de confiance fixé ($\alpha$, typiquement 95\% ou 99\%). Mathématiquement, la VaR est définie comme le quantile de la distribution des pertes du portefeuille :
+\begin{equation}
+    P(\text{Perte} > \text{VaR}_{\alpha}) = 1 - \alpha
+\end{equation}
+Bien que très populaire et réglementée (notamment dans les accords bancaires de Bâle), la VaR présente deux limites majeures : elle ne dit rien sur l'ampleur des pertes au-delà du seuil de confiance, et elle n'est pas mathématiquement subadditive (le risque d'un portefeuille fusionné peut être supérieur à la somme des risques individuels, contredisant le principe de diversification).
+
+\subsection{L'Expected Shortfall (ES)}
+L'Expected Shortfall (ou VaR conditionnelle) mesure l'espérance de la perte sachant que celle-ci dépasse le seuil de la VaR. C'est une mesure cohérente de risque qui résout les faiblesses de la VaR :
+\begin{equation}
+    \text{ES}_{\alpha} = E[\text{Perte} \mid \text{Perte} > \text{VaR}_{\alpha}]
+\end{equation}
+L'Expected Shortfall est particulièrement sensible aux « queues épaisses » et donne une image beaucoup plus réaliste du risque de perte extrême sur les marchés financiers modernes.

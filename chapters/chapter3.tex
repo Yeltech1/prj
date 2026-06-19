@@ -1,0 +1,116 @@
+\chapter{Intelligence Artificielle et Deep Learning pour la Prévision Financière}
+
+\section{Introduction à l'Intelligence Artificielle en Finance}
+L'Intelligence Artificielle (IA) désigne l'ensemble des théories et techniques mises en œuvre en vue de réaliser des machines capables de simuler l'intelligence humaine. Dans le secteur financier, l'IA s'est d'abord développée sous forme de systèmes experts basés sur des règles métier avant de connaître une révolution avec l'avènement du Machine Learning (Apprentissage Automatique) et du Deep Learning (Apprentissage Profond).
+
+Contrairement à la programmation classique où l'ingénieur écrit les règles de calcul pour obtenir un résultat à partir de données, le Machine Learning inverse ce paradigme : l'algorithme ingère des données et les résultats attendus pour apprendre de manière autonome les règles sous-jacentes.
+
+\section{Comparaison des Algorithmes de Prédiction}
+L'analyse prédictive des séries temporelles financières peut être réalisée par plusieurs classes de modèles, dont il convient de comprendre les spécificités et les limites.
+
+\subsection{Modèles Statistiques Classiques : ARIMA}
+Les modèles autorégressifs intégrés de moyenne mobile (ARIMA) constituent le standard de la statistique classique pour l'analyse des séries temporelles. Un modèle $ARIMA(p, d, q)$ modélise une variable en fonction de ses propres valeurs passées ($p$ termes autorégressifs) et des erreurs de prédiction passées ($q$ termes de moyenne mobile), après avoir stationnarisé la série par différenciation ($d$).
+Bien que robustes et faciles à interpréter, les modèles ARIMA souffrent de limites sévères en finance :
+\begin{itemize}
+    \item Ils supposent des relations strictement linéaires entre les variables.
+    \item Ils requièrent des séries temporelles stationnaires en moyenne et en variance.
+    \item Ils peinent à s'adapter aux changements structurels de régime sur les marchés financiers.
+\end{itemize}
+
+\subsection{Algorithmes de Machine Learning : Random Forest}
+Le Random Forest (Forêt Aléatoire) est un algorithme d'apprentissage supervisé basé sur l'assemblage de multiples arbres de décision (Bagging). En combinant les prédictions de centaines d'arbres entraînés sur des sous-ensembles aléatoires de données, Random Forest réduit le risque de sur-apprentissage (overfitting) et s'avère excellent pour capturer des relations non-linéaires complexes.
+Néanmoins, son principal inconvénient pour les séries temporelles est qu'il ne prend pas nativement en compte l'ordre chronologique des observations. Les données doivent être transformées sous forme de variables décalées (lags), et le modèle traite chaque ligne de données de manière indépendante, sans mémoire interne des séquences passées.
+
+\subsection{Apprentissage Profond et Réseaux de Neurones Récurrents}
+Le Deep Learning utilise des réseaux de neurones artificiels profonds (comportant de nombreuses couches cachées) pour extraire automatiquement des représentations complexes à partir des données brutes. 
+Pour traiter les données séquentielles (comme les cours de bourse), les réseaux de neurones classiques (Feedforward) sont inadaptés car ils supposent que les entrées sont indépendantes les unes des autres. Les **Réseaux de Neurones Récurrents (RNN)** corrigent cette lacune en introduisant des boucles de rétroaction. L'information circule d'un pas de temps à un autre grâce à un état caché qui fait office de mémoire interne.
+
+Cependant, les RNN classiques souffrent d'un problème mathématique majeur lors de leur entraînement par rétropropagation du gradient à travers le temps : le phénomène de \textbf{disparition du gradient} (vanishing gradient) ou d'\textbf{explosion du gradient}. Lorsque la séquence temporelle est longue, le gradient (qui sert à mettre à jour les poids du réseau) est multiplié à chaque pas de temps par des valeurs proches de zéro (ou supérieures à un), ce qui le fait tendre vers zéro (ou vers l'infini). En conséquence, le réseau devient incapable de retenir des dépendances temporelles à long terme.
+
+\section{Architecture des Réseaux LSTM}
+Pour résoudre le problème de disparition du gradient, Sepp Hochreiter et Jürgen Schmidhuber ont introduit en 1997 l'architecture \textbf{LSTM (Long Short-Term Memory)}. Le réseau LSTM remplace les neurones classiques des couches cachées par des cellules de mémoire complexes (LSTM memory cells). 
+
+L'élément central d'une cellule LSTM est son **état de cellule** (cell state), représenté par $C_t$, qui traverse toute la chaîne récurrente avec seulement quelques interactions linéaires mineures, agissant comme une « autoroute de l'information ». La régulation des flux d'information au sein de la cellule s'effectue via trois portes mathématiques (gates) : la porte d'oubli, la porte d'entrée et la porte de sortie.
+
+\begin{figure}[h]
+    \centering
+    % Représentation schématique conceptuelle d'une cellule LSTM
+    \fbox{
+        \begin{minipage}{0.85\textwidth}
+            \centering
+            \vspace{0.2cm}
+            \textbf{Schéma Mathématique d'une Cellule LSTM} \\
+            \vspace{0.4cm}
+            Entrées : $x_t$ (nouvelle donnée), $h_{t-1}$ (état caché précédent), $C_{t-1}$ (état de cellule précédent) \\
+            $\Downarrow$ \\
+            Porte d'oubli ($f_t$) $\rightarrow$ Décide quoi oublier de $C_{t-1}$ \\
+            Porte d'entrée ($i_t$ \& $\tilde{C}_t$) $\rightarrow$ Décide quelles nouvelles informations stocker dans $C_t$ \\
+            Mise à jour : $C_t = f_t * C_{t-1} + i_t * \tilde{C}_t$ \\
+            Porte de sortie ($o_t$ \& $h_t$) $\rightarrow$ Filtre l'information pour l'état caché de sortie $h_t$ \\
+            $\Downarrow$ \\
+            Sorties : $h_t$ (état caché actuel), $C_t$ (état de cellule actuel)
+            \vspace{0.2cm}
+        \end{minipage}
+    }
+    \caption{Flux de traitement et portes au sein d'une cellule LSTM}
+    \label{fig:lstm_cell}
+\end{figure}
+
+Voici la description mathématique pas-à-pas du traitement au sein d'une cellule LSTM à l'instant $t$ :
+
+\subsection{1. La Porte d'Oubli (Forget Gate)}
+Cette porte détermine quelle quantité de l'information passée doit être conservée ou jetée. Elle prend en entrée l'état caché précédent $h_{t-1}$ et le vecteur d'entrée actuel $x_t$, et applique une fonction d'activation sigmoïde ($\sigma$) :
+\begin{equation}
+    f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)
+\end{equation}
+où $W_f$ représente la matrice des poids de la porte d'oubli, $b_f$ le vecteur de biais, et $[h_{t-1}, x_t]$ la concaténation de l'état caché précédent et de l'entrée. La fonction sigmoïde renvoie des valeurs comprises entre 0 (oublier complètement) et 1 (conserver entièrement).
+
+\subsection{2. La Porte d'Entrée (Input Gate)}
+Cette étape décide quelles nouvelles informations seront stockées dans l'état de cellule. Elle se compose de deux parties :
+* La fonction sigmoïde de la porte d'entrée ($i_t$) décide quelles valeurs seront mises à jour :
+\begin{equation}
+    i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)
+\end{equation}
+* Une couche tangente hyperbolique ($\tanh$) crée un vecteur de nouvelles valeurs candidates ($\tilde{C}_t$) qui pourraient être ajoutées à l'état de cellule :
+\begin{equation}
+    \tilde{C}_t = \tanh(W_c \cdot [h_{t-1}, x_t] + b_c)
+\end{equation}
+
+\subsection{3. Mise à jour de l'État de Cellule}
+L'ancien état de cellule $C_{t-1}$ est mis à jour pour devenir le nouvel état $C_t$. On multiplie l'ancien état par la porte d'oubli $f_t$, puis on ajoute les nouvelles informations candidates pondérées par la porte d'entrée $i_t$ :
+\begin{equation}
+    C_t = f_t * C_{t-1} + i_t * \tilde{C}_t
+\end{equation}
+où $*$ désigne le produit de Hadamard (produit matriciel terme à terme).
+
+\subsection{4. La Porte de Sortie (Output Gate)}
+Cette porte détermine la valeur de l'état caché $h_t$ qui sera envoyé en sortie de la cellule et servira d'entrée au pas de temps suivant :
+* On applique d'abord une fonction sigmoïde sur les entrées pour décider quelles parties de l'état de cellule vont être extraites :
+\begin{equation}
+    o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)
+\end{equation}
+* On multiplie ensuite l'état de cellule $C_t$ (passé par la fonction non-linéaire $\tanh$) par la porte de sortie $o_t$ pour obtenir le nouvel état caché :
+\begin{equation}
+    h_t = o_t * \tanh(C_t)
+\end{equation}
+
+Grâce à ce mécanisme de portes, le réseau LSTM peut apprendre à retenir des motifs temporels complexes sur de très longues séquences (plusieurs dizaines de pas de temps), ce qui en fait l'outil idéal pour analyser des cours financiers qui dépendent d'historiques de prix de plusieurs semaines.
+
+\section{Stratégie Hybride LSTM + Markowitz}
+La stratégie d'optimisation classique de Markowitz présente une faiblesse majeure : elle utilise des rendements historiques moyens pour estimer les rendements futurs espérés $E(R_i)$. Cette approche rétrospective présuppose implicitement que le futur sera identique au passé récent.
+
+Notre **stratégie hybride** propose une approche prospective (forward-looking) en deux étapes :
+\begin{enumerate}
+    \item **Phase Prédictive (IA) :** Pour chaque actif du portefeuille, un réseau LSTM est entraîné sur l'historique des cours. Le modèle prend en entrée les rendements et indicateurs techniques récents (ex : les 10 derniers jours de bourse) et génère une prédiction pour le rendement du jour suivant :
+    \begin{equation}
+        \hat{R}_{i,t+1} = \text{LSTM}_i(R_{i,t}, R_{i,t-1}, \dots, R_{i,t-9}, \text{Features}_t)
+    \end{equation}
+    Le vecteur des prédictions $\hat{R}_{t+1} = \begin{pmatrix} \hat{R}_{1,t+1} & \dots & \hat{R}_{n,t+1} \end{pmatrix}^T$ constitue notre estimation prospective des rendements espérés.
+    \item **Phase d'Allocation (MPT) :** Au lieu d'injecter la moyenne historique $E(R)$ dans le problème d'optimisation (2.8), nous y injectons les rendements prédits par l'IA $\hat{R}$. L'optimiseur résout alors le problème de maximisation du ratio de Sharpe ou de minimisation du risque sous contrainte de ce rendement attendu prédit :
+    \begin{equation}
+        \max_{w_t} \frac{w_t^T \hat{R}_{t+1} - R_f}{\sqrt{w_t^T \Sigma w_t}}
+    \end{equation}
+    La matrice de covariance $\Sigma$ est quant à elle estimée de manière classique (ou régularisée) sur la base des rendements historiques, car la structure de corrélation entre les actifs est généralement plus stable dans le temps que le sens de variation des prix.
+\end{enumerate}
+
+Cette approche hybride associe le meilleur des deux mondes : la puissance prédictive non-linéaire de l'Intelligence Artificielle pour capter les tendances des prix, et la rigueur de la théorie moderne du portefeuille pour structurer le contrôle du risque global via la matrice de corrélation.

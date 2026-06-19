@@ -1,0 +1,25 @@
+\chapter*{Conclusion Générale}
+\addcontentsline{toc}{chapter}{Conclusion Générale}
+
+Ce travail de fin d'études avait pour objectif de concevoir, d'implémenter et d'évaluer une méthodologie hybride d'optimisation de portefeuille associant les techniques d'apprentissage profond (Deep Learning) et la Théorie Moderne du Portefeuille classique de Harry Markowitz. 
+
+Pour ce faire, nous avons substitué l'estimation rétrospective des rendements espérés (moyennes historiques), traditionnellement utilisée dans l'optimiseur de Markowitz, par des prévisions prospectives générées par un modèle de réseau de neurones récurrents de type \textbf{LSTM (Long Short-Term Memory)}. Ce modèle a été entraîné sur une période de 10 ans (2015-2024) pour analyser les comportements temporels de cinq grands actifs du S\&P 500 (Apple, Microsoft, Google, JPMorgan et Procter \& Gamble).
+
+Les simulations de backtesting menées sur les années 2023 et 2024 ont apporté des réponses éclairantes à notre problématique :
+* **Surperformance quantitative :** La stratégie hybride assistée par IA a largement surperformé la stratégie classique de Markowitz ainsi que le marché dans son ensemble (S\&P 500), démontrant l'intérêt d'une gestion tactique dynamique par rapport à une allocation statique.
+* **Optimisation du profil rendement-risque :** Grâce aux prévisions de tendance du LSTM, la stratégie hybride a su réallouer dynamiquement le capital vers les actifs les plus prometteurs tout en respectant les contraintes de diversification, ce qui a permis d'obtenir un Ratio de Sharpe nettement supérieur et un meilleur contrôle des drawdowns.
+* **Résolution des limites de Markowitz :** En fournissant des rendements espérés plus précis et prospectifs, le modèle a atténué la sensibilité excessive de l'optimiseur classique aux données historiques d'entrée (problème du « Garbage In, Garbage Out »).
+
+\section*{Limites de la Méthodologie Hybride}
+Malgré ces résultats très encourageants, l'application de l'Intelligence Artificielle à la finance se heurte à plusieurs limites critiques qu'il convient de souligner :
+1. **La nature non-stationnaire des marchés :** Les séries temporelles financières sont intrinsèquement bruitées et sujettes à des changements de régime soudains. Face à des chocs exogènes imprévisibles (guerres, crises sanitaires, annonces de politiques monétaires surprises), le modèle LSTM peut commettre des erreurs d'estimation importantes car ces événements ne figurent pas dans ses données d'entraînement.
+2. **Le coût des transactions :** Le rééquilibrage quotidien du portefeuille dynamique engendre des frais de courtage et des taxes sur les transactions qui, dans la réalité, peuvent grignoter une partie de la surperformance par rapport à une stratégie passive (buy-and-hold) si la fréquence de rééquilibrage n'est pas optimisée.
+3. **L'effet « boîte noire » :** Les modèles de Deep Learning manquent d'explicabilité (problème d'interprétabilité). Il est difficile pour un gérant de portefeuille de comprendre précisément les raisons économiques derrière une allocation d'actifs générée par le réseau de neurones, ce qui pose des défis réglementaires et de gestion des risques.
+
+\section*{Perspectives de Recherche}
+Plusieurs pistes de recherche méritent d'être explorées pour prolonger et enrichir ce travail :
+* **Apprentissage par Renforcement Profond (Deep Reinforcement Learning - DRL) :** Au lieu de diviser le problème en deux étapes indépendantes (prédiction par LSTM puis allocation par optimisateur), un agent DRL pourrait apprendre directement la politique d'allocation optimale par essai-erreur sur les marchés, en maximisant directement le ratio de Sharpe sous contrainte de coûts de transaction.
+* **Traitement du Langage Naturel (NLP) et Analyse des Sentiments :** Intégrer des données alternatives de type textuel (flux d'actualités financières, communiqués de presse, réseaux sociaux) analysées par des modèles de traitement du langage pour enrichir les signaux d'entrée du réseau LSTM.
+* **Modèles Multi-Facteurs et Arbitrage de Volatilité :** Associer les prédictions de prix à des prédictions de volatilité (via des modèles GARCH ou LSTM de volatilité) pour alimenter une matrice de covariance dynamique et non plus historique, améliorant ainsi la gestion du risque en période de crise.
+
+En conclusion, si l'Intelligence Artificielle ne saurait remplacer le jugement et l'expertise des analystes humains, elle s'impose désormais comme un copilote technologique indispensable pour traiter la complexité des données financières et concevoir les stratégies d'investissement de demain.

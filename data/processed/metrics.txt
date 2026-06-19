@@ -1,0 +1,3 @@
+Classique: Rendement=33.65%, Volatilité=16.12%, Sharpe=2.03
+IA: Rendement=34.58%, Volatilité=15.73%, Sharpe=2.13
+Benchmark: Rendement=25.01%, Volatilité=12.88%, Sharpe=1.86

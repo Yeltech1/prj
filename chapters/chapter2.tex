@@ -1,0 +1,161 @@
+\chapter{La Théorie Moderne du Portefeuille et le Modèle d'Optimisation Classique}
+
+\section{Le Modèle de Markowitz (1952)}
+La Théorie Moderne du Portefeuille (MPT), introduite par Harry Markowitz dans son article fondateur de 1952 intitulé \textit{« Portfolio Selection »}, repose sur l'idée que le choix d'un investissement ne doit pas se faire sur la base de son seul rendement espéré, mais sur le couple rendement-risque. Dans ce cadre, le risque est mesuré par la variance des rendements. 
+
+Markowitz a démontré que le risque d'un portefeuille d'actifs financiers est généralement inférieur à la somme pondérée des risques de chaque actif pris individuellement. Cet effet bénéfique s'explique par la corrélation imparfaite entre les rendements des différents actifs.
+
+\subsection{Formalisation Mathématique d'un Portefeuille}
+Soit un univers composé de $n$ actifs financiers. Le rendement espéré de chaque actif $i$ est noté $E(R_i)$ et sa volatilité (écart-type) est notée $\sigma_i$.
+On définit les variables de décision suivantes :
+\begin{equation}
+    w = \begin{pmatrix} w_1 \\ w_2 \\ \vdots \\ w_n \end{pmatrix}
+\end{equation}
+où $w_i$ représente la proportion du capital total investi dans l'actif $i$. Ces poids doivent satisfaire la contrainte budgétaire :
+\begin{equation}
+    \sum_{i=1}^{n} w_i = 1 \quad \text{soit} \quad w^T \mathbf{1} = 1
+\end{equation}
+où $\mathbf{1}$ est un vecteur colonne de dimensions $n \times 1$ dont toutes les composantes sont égales à 1.
+
+\subsection{Rendement Espéré du Portefeuille}
+Le rendement espéré du portefeuille $E(R_p)$ est la combinaison linéaire des rendements espérés des actifs individuels :
+\begin{equation}
+    E(R_p) = \sum_{i=1}^{n} w_i E(R_i) = w^T E(R)
+\end{equation}
+où $E(R) = \begin{pmatrix} E(R_1) & E(R_2) & \dots & E(R_n) \end{pmatrix}^T$ est le vecteur des rendements espérés des actifs.
+
+\subsection{Risque (Variance) du Portefeuille}
+La variance des rendements du portefeuille, notée $\sigma_p^2$, dépend non seulement de la variance des actifs individuels mais aussi de leurs covariances :
+\begin{equation}
+    \sigma_p^2 = \sum_{i=1}^{n} \sum_{j=1}^{n} w_i w_j \sigma_{ij} = w^T \Sigma w
+\end{equation}
+où $\sigma_{ij}$ représente la covariance entre le rendement de l'actif $i$ et celui de l'actif $j$ (avec $\sigma_{ii} = \sigma_i^2$ la variance de l'actif $i$), et $\Sigma$ désigne la matrice de variance-covariance de dimensions $n \times n$ :
+\begin{equation}
+    \Sigma = \begin{pmatrix}
+        \sigma_1^2 & \sigma_{12} & \dots & \sigma_{1n} \\
+        \sigma_{21} & \sigma_2^2 & \dots & \sigma_{2n} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \sigma_{n1} & \sigma_{n2} & \dots & \sigma_n^2
+    \end{pmatrix}
+\end{equation}
+La covariance peut également être exprimée en utilisant le coefficient de corrélation linéaire de Pearson $\rho_{ij}$ :
+\begin{equation}
+    \sigma_{ij} = \rho_{ij} \sigma_i \sigma_j
+\end{equation}
+avec $-1 \le \rho_{ij} \le 1$. C'est ce coefficient de corrélation $\rho_{ij}$ qui détermine l'efficacité de la diversification :
+\begin{itemize}
+    \item Si $\rho_{ij} = 1$ : Les actifs sont parfaitement corrélés positivement. Il n'y a aucun effet de diversification. Le risque du portefeuille est la moyenne pondérée des risques individuels.
+    \item Si $\rho_{ij} < 1$ : La volatilité du portefeuille est strictement inférieure à la moyenne pondérée des volatilités individuelles. Le risque global diminue.
+    \item Si $\rho_{ij} = -1$ : Les actifs sont parfaitement corrélés négativement. Il est théoriquement possible de construire un portefeuille à risque nul en combinant ces deux actifs.
+\end{itemize}
+
+\section{Le Problème d'Optimisation et Dérivation Mathématique}
+L'investisseur de Markowitz est caractérisé par son aversion au risque et sa rationalité. Pour construire son portefeuille, il est confronté à un double objectif contradictoire : maximiser son rendement attendu pour un niveau de risque donné, ou minimiser son risque pour un rendement attendu cible.
+
+Mathématiquement, le problème de minimisation de la variance pour un rendement cible $R^*$ s'écrit sous la forme suivante :
+\begin{equation}
+    \begin{aligned}
+        & \min_{w} \frac{1}{2} w^T \Sigma w \\
+        & \text{sous les contraintes :} \\
+        & w^T E(R) = R^* \\
+        & w^T \mathbf{1} = 1
+    \end{aligned}
+\end{equation}
+Le facteur $\frac{1}{2}$ devant la variance est introduit pour simplifier les calculs de dérivation.
+
+\subsection{Résolution par la Méthode des Multiplicateurs de Lagrange}
+Pour résoudre ce problème d'optimisation quadratique sous contraintes d'égalité, on introduit le Lagrangien $\mathcal{L}$ :
+\begin{equation}
+    \mathcal{L}(w, \lambda_1, \lambda_2) = \frac{1}{2} w^T \Sigma w - \lambda_1 (w^T E(R) - R^*) - \lambda_2 (w^T \mathbf{1} - 1)
+\end{equation}
+où $\lambda_1$ et $\lambda_2$ sont les multiplicateurs de Lagrange associés respectivement à la contrainte de rendement cible et à la contrainte budgétaire.
+
+Les conditions de premier ordre (CPO) s'obtiennent en annulant les dérivées partielles du Lagrangien par rapport aux poids $w$ et aux multiplicateurs :
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial w} = \Sigma w - \lambda_1 E(R) - \lambda_2 \mathbf{1} = 0 \\
+    \frac{\partial \mathcal{L}}{\partial \lambda_1} = w^T E(R) - R^* = 0 \\
+    \frac{\partial \mathcal{L}}{\partial \lambda_2} = w^T \mathbf{1} - 1 = 0
+\end{align}
+
+De l'équation (2.11), on exprime le vecteur de poids optimal $w^*$ en multipliant par l'inverse de la matrice de covariance $\Sigma^{-1}$ (en supposant que la matrice est définie positive et donc inversible) :
+\begin{equation}
+    w^* = \lambda_1 \Sigma^{-1} E(R) + \lambda_2 \Sigma^{-1} \mathbf{1}
+\end{equation}
+En injectant cette expression de $w^*$ dans les équations de contraintes (2.12) et (2.13), on obtient un système d'équations linéaires à deux inconnues ($\lambda_1$ et $\lambda_2$) :
+\begin{align}
+    \lambda_1 E(R)^T \Sigma^{-1} E(R) + \lambda_2 E(R)^T \Sigma^{-1} \mathbf{1} = R^* \\
+    \lambda_1 \mathbf{1}^T \Sigma^{-1} E(R) + \lambda_2 \mathbf{1}^T \Sigma^{-1} \mathbf{1} = 1
+\end{align}
+
+Pour simplifier l'écriture, on définit les constantes statistiques classiques suivantes :
+\begin{align}
+    A &= E(R)^T \Sigma^{-1} E(R) \\
+    B &= E(R)^T \Sigma^{-1} \mathbf{1} = \mathbf{1}^T \Sigma^{-1} E(R) \\
+    C &= \mathbf{1}^T \Sigma^{-1} \mathbf{1}
+\end{align}
+Le système s'écrit alors :
+\begin{align}
+    A \lambda_1 + B \lambda_2 = R^* \\
+    B \lambda_1 + C \lambda_2 = 1
+\end{align}
+Le déterminant de ce système est $D = AC - B^2$. En résolvant pour $\lambda_1$ et $\lambda_2$, on trouve :
+\begin{align}
+    \lambda_1 &= \frac{C R^* - B}{AC - B^2} \\
+    \lambda_2 &= \frac{A - B R^*}{AC - B^2}
+\end{align
+En substituant ces multiplicateurs dans l'équation (2.14), on obtient l'expression analytique finale des poids optimaux pour un rendement cible donné :
+\begin{equation}
+    w^* = \frac{C R^* - B}{AC - B^2} \Sigma^{-1} E(R) + \frac{A - B R^*}{AC - B^2} \Sigma^{-1} \mathbf{1}
+\end{equation}
+
+\section{La Frontière Efficiente}
+En faisant varier le rendement cible $R^*$, on trace une courbe dans le plan (Risque, Rendement) reliant l'ensemble des portefeuilles minimisant la variance. Cette enveloppe est une hyperbole. 
+
+La partie supérieure de cette hyperbole (située au-dessus du portefeuille de variance minimale globale, appelé \textit{Global Minimum Variance Portfolio} ou GMVP) est appelée la \textbf{Frontière Efficiente}. Tout portefeuille situé sur cette frontière offre le rendement maximal pour un niveau de risque donné. Un investisseur rationnel choisira exclusivement son allocation parmi les portefeuilles de cette frontière, le choix final dépendant de son degré personnel d'aversion au risque.
+
+\section{Le Modèle d'Évaluation des Actifs Financiers (MEDAF)}
+Développé par William Sharpe (1964), John Lintner (1965) et Jan Mossin (1966), le Modèle d'Évaluation des Actifs Financiers (MEDAF, ou CAPM en anglais) prolonge le travail de Markowitz en y introduisant l'existence d'un \textbf{actif sans risque} (comme les bons du Trésor à court terme d'un État stable).
+
+\subsection{La Droite de Marché des Capitaux (CML)}
+En combinant l'actif sans risque (de rendement certain $R_f$ et de volatilité nulle) avec le portefeuille d'actifs risqués, la frontière efficiente n'est plus une hyperbole mais devient une droite tangente à l'hyperbole de Markowitz. Cette droite est appelée la \textbf{Droite de Marché des Capitaux} (Capital Market Line - CML).
+
+Le point de tangence correspond au \textbf{Portefeuille de Marché} ($M$), composé de tous les actifs risqués disponibles pondérés par leur capitalisation boursière. La formule de la CML s'écrit :
+\begin{equation}
+    E(R_p) = R_f + \left[ \frac{E(R_m) - R_f}{\sigma_m} \right] \sigma_p
+\end{equation
+où $E(R_m)$ et $\sigma_m$ désignent respectivement le rendement espéré et la volatilité du portefeuille de marché. Le terme entre crochets représente le prix du risque sur le marché.
+
+\subsection{Le Beta et la Droite de Marché des Titres (SML)}
+À l'équilibre du marché, le MEDAF stipule que le rendement espéré de n'importe quel actif individuel $i$ est lié linéairement à son risque systématique, mesuré par le coefficient Beta ($\beta_i$) :
+\begin{equation}
+    E(R_i) = R_f + \beta_i (E(R_m) - R_f)
+\end{equation}
+Le Beta de l'actif $i$ mesure la sensibilité de son rendement par rapport à celui du portefeuille de marché :
+\begin{equation}
+    \beta_i = \frac{\text{Cov}(R_i, R_m)}{\text{Var}(R_m)}
+\end{equation}
+Le risque d'un actif individuel est ainsi scindé en deux composantes :
+\begin{enumerate}
+    \item \textbf{Le risque spécifique (ou idiosyncratique) :} Propre à l'entreprise émettrice. Ce risque peut être entièrement éliminé par une diversification adéquate.
+    \item \textbf{Le risque systématique (ou risque de marché) :} Lié aux fluctuations globales de l'économie. Ce risque ne peut pas être diversifié. Le MEDAF indique que le marché ne rémunère que la prise de risque systématique.
+\end{enumerate}
+
+La représentation graphique de la relation du MEDAF est la \textbf{Droite de Marché des Titres} (Security Market Line - SML). Un actif sous-évalué se situera au-dessus de la SML (son rendement espéré est anormalement élevé par rapport à son risque), tandis qu'un actif surévalué se situera au-dessous.
+
+\subsection{Le Ratio de Sharpe}
+Dérivé du MEDAF, le Ratio de Sharpe ($S$) mesure la performance d'un portefeuille ajustée du risque. Il se définit comme l'excédent de rendement par rapport au taux sans risque divisé par la volatilité globale du portefeuille :
+\begin{equation}
+    S = \frac{E(R_p) - R_f}{\sigma_p}
+\end{equation}
+Un ratio supérieur à 0 indique que le portefeuille surperforme l'actif sans risque. Un ratio supérieur à 1 est considéré comme très performant sur les marchés d'actions. L'objectif de l'optimisation est généralement de maximiser ce ratio (Portefeuille de Sharpe Maximum).
+
+\section{Limites de la Théorie Classique}
+Malgré sa puissance théorique, l'optimisation classique de Markowitz présente des limites majeures qui entravent son utilisation brute sur les marchés financiers réels :
+
+\begin{enumerate}
+    \item \textbf{Le phénomène « Garbage In, Garbage Out » (GIGO) :} L'optimiseur de Markowitz est extrêmement sensible aux paramètres d'entrée (vecteur des rendements espérés et matrice de covariance). Une erreur d'estimation de 1\% sur le rendement attendu d'un actif peut modifier du tout au tout les poids optimaux calculés, menant à des allocations irréalistes ou à des positions excessivement concentrées.
+    \item \textbf{Instabilité de la matrice de covariance :} L'estimation de la matrice de covariance par des séries historiques est instable, en particulier lorsque le nombre d'actifs $n$ est grand par rapport au nombre d'observations historiques $T$ (problème de dimensionalité).
+    \item \textbf{Non-normalité des rendements :} La MPT suppose des rendements gaussiens et n'évalue le risque que par la variance. Or, la variance traite de manière symétrique les écarts positifs (gains) et négatifs (pertes), ce qui ne correspond pas aux préférences des investisseurs réels qui ne craignent que le risque de baisse.
+\end{enumerate}
+
+Pour surmonter ces faiblesses, plusieurs approches de régularisation ont été introduites, comme le modèle de Black-Litterman (qui intègre les opinions des gérants). L'intégration de modèles d'apprentissage automatique (Machine Learning / Deep Learning) offre une alternative moderne prometteuse en remplaçant l'estimation statistique historique par des prédictions intelligentes et non-linéaires.

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio d'optimisation d'investissement utilisant la théorie moderne du portefeuille et l'apprentissage automatique">
+    <meta name="keywords" content="optimisation de portefeuille, finance, investissement, machine learning, python, data science">
+    <meta name="author" content="Baudelaire12">
+
+    <title>Portfolio Optimization | Projet Data Science</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-color: #1f2937;
+            --light-text: #6b7280;
+            --background-color: #ffffff;
+            --light-bg: #f3f4f6;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 80px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 40px 0 20px;
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: var(--secondary-color);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .lead {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-light {
+            background-color: var(--light-bg);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .screenshots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .screenshot {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .screenshot img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tech-item {
+            background-color: white;
+            border-radius: 6px;
+            padding: 15px 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tech-item i {
+            color: var(--primary-color);
+        }
+
+        .timeline {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background-color: var(--border-color);
+        }
+
+        .timeline-item {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            width: calc(50% - 30px);
+            margin-left: auto;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            transform: rotate(45deg);
+            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: auto;
+            right: -10px;
+            box-shadow: 2px -2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline-date {
+            position: absolute;
+            top: 20px;
+            left: -140px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .timeline-item:nth-child(even) .timeline-date {
+            left: auto;
+            right: -140px;
+        }
+
+        .cta-section {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .cta-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        footer {
+            background-color: #1a202c;
+            color: white;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .lead {
+                font-size: 1.1rem;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px !important;
+                margin-right: 0 !important;
+            }
+
+            .timeline-content::before {
+                left: -10px !important;
+                right: auto !important;
+            }
+
+            .timeline-date {
+                position: relative;
+                left: 0 !important;
+                right: auto !important;
+                top: 0;
+                margin-bottom: 15px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <h1>Optimisation de Portefeuille d'Investissement</h1>
+            <p class="lead">Une solution avancée combinant la Théorie Moderne du Portefeuille et l'apprentissage automatique pour optimiser vos investissements financiers</p>
+            <div>
+                <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE" class="btn btn-primary">
+                    <i class="fab fa-github"></i> Voir sur GitHub
+                </a>
+                <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/blob/master/docs/user_guide.md" class="btn btn-outline">
+                    <i class="fas fa-book"></i> Documentation
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="container">
+            <h2>À propos du projet</h2>
+            <p>
+                Ce projet d'optimisation de portefeuille est une solution complète pour l'analyse et l'optimisation des investissements financiers.
+                Il combine la Théorie Moderne du Portefeuille (MPT) de Markowitz avec des techniques avancées d'apprentissage automatique pour
+                aider les investisseurs à prendre des décisions éclairées basées sur des données réelles.
+            </p>
+            <p>
+                L'application permet de collecter des données financières historiques via Yahoo Finance, d'analyser les rendements et les risques,
+                d'optimiser l'allocation d'actifs selon différentes stratégies, et de visualiser les résultats à travers une interface interactive.
+            </p>
+        </div>
+    </section>
+
+    <section class="section section-light">
+        <div class="container">
+            <h2>Fonctionnalités principales</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Collecte de données réelles</h3>
+                    <p>Récupération de données financières via l'API Yahoo Finance avec gestion robuste des erreurs et des données manquantes.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Optimisation de portefeuille</h3>
+                    <p>Implémentation de l'algorithme d'optimisation de Markowitz pour trouver le portefeuille optimal sur la frontière efficiente.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Modèles d'apprentissage automatique</h3>
+                    <p>Utilisation de modèles ML pour prédire les rendements futurs et améliorer l'allocation d'actifs.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <h3>Tableau de bord interactif</h3>
+                    <p>Interface utilisateur interactive avec Streamlit pour visualiser et analyser les résultats d'optimisation.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Backtesting des stratégies</h3>
+                    <p>Évaluation des performances des stratégies d'investissement sur des données historiques.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3>Architecture modulaire</h3>
+                    <p>Structure de code modulaire et extensible avec différents modes d'exécution pour s'adapter à vos besoins.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Captures d'écran</h2>
+            <p>Découvrez l'interface utilisateur intuitive et les visualisations interactives de notre application.</p>
+            <div class="screenshots">
+                <div class="screenshot">
+                    <img src="https://raw.githubusercontent.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/master/reports/figures/efficient_frontier.png" alt="Frontière efficiente" onerror="this.src='https://via.placeholder.com/600x400?text=Frontière+Efficiente'">
+                </div>
+                <div class="screenshot">
+                    <img src="https://raw.githubusercontent.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/master/reports/figures/portfolio_allocation.png" alt="Allocation du portefeuille" onerror="this.src='https://via.placeholder.com/600x400?text=Allocation+du+Portefeuille'">
+                </div>
+                <div class="screenshot">
+                    <img src="https://raw.githubusercontent.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/master/reports/figures/returns_comparison.png" alt="Comparaison des rendements" onerror="this.src='https://via.placeholder.com/600x400?text=Comparaison+des+Rendements'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-light">
+        <div class="container">
+            <h2>Technologies utilisées</h2>
+            <p>Ce projet utilise un ensemble de technologies modernes pour offrir une solution robuste et performante.</p>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <i class="fab fa-python"></i> Python
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-chart-bar"></i> Pandas
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-calculator"></i> NumPy
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-brain"></i> Scikit-learn
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-chart-line"></i> Plotly
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-desktop"></i> Streamlit
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-database"></i> Yahoo Finance
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-docker"></i> Docker
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>Comment démarrer</h2>
+            <p>Suivez ces étapes simples pour commencer à utiliser notre application d'optimisation de portefeuille :</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Étape 1</div>
+                    <div class="timeline-content">
+                        <h3>Cloner le dépôt</h3>
+                        <p>Clonez le dépôt GitHub sur votre machine locale :</p>
+                        <code>git clone https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE.git</code>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Étape 2</div>
+                    <div class="timeline-content">
+                        <h3>Installer les dépendances</h3>
+                        <p>Installez toutes les dépendances nécessaires :</p>
+                        <code>pip install -r requirements.txt</code>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Étape 3</div>
+                    <div class="timeline-content">
+                        <h3>Collecter des données</h3>
+                        <p>Collectez des données financières réelles :</p>
+                        <code>python collect_real_data.py</code>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Étape 4</div>
+                    <div class="timeline-content">
+                        <h3>Lancer l'application</h3>
+                        <p>Lancez l'application Streamlit :</p>
+                        <code>python run_dashboard.py</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Prêt à optimiser vos investissements ?</h2>
+            <p class="lead">Explorez notre projet sur GitHub et découvrez comment la science des données peut transformer votre approche d'investissement.</p>
+            <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE" class="btn">
+                <i class="fab fa-github"></i> Explorer le projet
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h3>Portfolio Optimization</h3>
+            <p>Un projet de data science pour l'optimisation des investissements financiers</p>
+
+            <div class="footer-links">
+                <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE">GitHub</a>
+                <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/blob/master/docs/user_guide.md">Documentation</a>
+                <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/blob/master/CONTRIBUTING.md">Contribuer</a>
+                <a href="https://github.com/Baudelaire12/PROJET-OPTIMIZATION-PORTFEUILLE/issues">Signaler un bug</a>
+            </div>
+
+            <div class="social-links">
+                <a href="https://github.com/Baudelaire12"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+
+            <p class="copyright">© 2025 Portfolio Optimization Project. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>

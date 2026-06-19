@@ -1,0 +1,19 @@
+-r requirements.txt
+
+# Outils de test
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Outils de documentation
+sphinx>=8.0.0
+sphinx-rtd-theme>=3.0.0
+sphinx-autobuild>=2021.3.14
+
+# Outils de qualité du code
+black>=24.0.0
+flake8>=7.0.0
+isort>=5.12.0
+
+# Outils de développement
+jupyter>=1.0.0
+ipykernel>=6.0.0
