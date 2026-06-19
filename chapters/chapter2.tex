@@ -158,4 +158,91 @@ Malgré sa puissance théorique, l'optimisation classique de Markowitz présente
     \item \textbf{Non-normalité des rendements :} La MPT suppose des rendements gaussiens et n'évalue le risque que par la variance. Or, la variance traite de manière symétrique les écarts positifs (gains) et négatifs (pertes), ce qui ne correspond pas aux préférences des investisseurs réels qui ne craignent que le risque de baisse.
 \end{enumerate}
 
-Pour surmonter ces faiblesses, plusieurs approches de régularisation ont été introduites, comme le modèle de Black-Litterman (qui intègre les opinions des gérants). L'intégration de modèles d'apprentissage automatique (Machine Learning / Deep Learning) offre une alternative moderne prometteuse en remplaçant l'estimation statistique historique par des prédictions intelligentes et non-linéaires.
+Pour surmonter ces faiblesses, plusieurs approches de régularisation ont été introduites. L'intégration de modèles d'apprentissage automatique (Machine Learning / Deep Learning) offre une alternative moderne prometteuse en remplaçant l'estimation statistique historique par des prédictions intelligentes et non-linéaires, tandis que des modèles comme celui de Black-Litterman ou la méthode Hierarchical Risk Parity proposent des cadres robustes d'optimisation alternative.
+
+\section{Le Modèle de Black-Litterman}
+Le modèle de Black-Litterman, développé par Fischer Black et Robert Litterman chez Goldman Sachs en 1990, a été conçu pour résoudre le problème majeur d'instabilité des poids et de sensibilité excessive aux données d'entrée (effet GIGO) inhérent à l'optimisation classique de Markowitz. 
+
+Plutôt que d'estimer les rendements espérés directement à partir de données historiques (qui s'avèrent être de très mauvais estimateurs du futur), Black-Litterman propose une approche bayésienne. Le modèle prend comme point de départ (le \textit{prior}) un état d'équilibre du marché, puis l'ajuste en y intégrant les opinions subjectives (les \textit{views}) de l'investisseur, pondérées par le degré de confiance accordé à chaque opinion.
+
+\subsection{Étape 1 : L'Équilibre du Marché (Reverse Optimization)}
+La première étape consiste à déterminer le rendement d'équilibre neutre du marché. Pour ce faire, on inverse le problème d'optimisation classique. Si l'on suppose que le portefeuille de marché ($w_{\text{mkt}}$) est optimal pour l'ensemble des investisseurs, alors le vecteur des rendements d'équilibre $\Pi$ peut être déduit de la matrice de covariance $\Sigma$ et du coefficient d'aversion au risque global du marché $\lambda$ :
+\begin{equation}
+    \Pi = \lambda \Sigma w_{\text{mkt}}
+\end{equation}
+Le coefficient d'aversion au risque $\lambda$ est un scalaire défini par :
+\begin{equation}
+    \lambda = \frac{E(R_m) - R_f}{\sigma_m^2}
+\end{equation}
+où $E(R_m)$ est le rendement attendu du marché, $R_f$ le taux sans risque, et $\sigma_m^2$ la variance du marché. Ce vecteur $\Pi$ représente le rendement attendu de chaque actif si l'investisseur n'a aucune opinion spécifique sur le marché.
+
+\subsection{Étape 2 : Modélisation des Opinions de l'Investisseur}
+L'investisseur peut formuler $k$ opinions (absolues ou relatives) sur les rendements des actifs. Ces opinions sont représentées par un système linéaire :
+\begin{equation}
+    P \cdot E(R) = Q + \epsilon
+\end{equation}
+où :
+\begin{itemize}
+    \item $P$ est une matrice de dimensions $k \times n$ identifiant les actifs concernés par chaque opinion. Pour une opinion absolue sur l'actif $i$, la ligne de $P$ contient 1 à la colonne $i$ et 0 ailleurs. Pour une opinion relative (par exemple, l'actif $A$ surperformera l'actif $B$ de 2\%), la ligne contient 1 pour l'actif $A$, -1 pour l'actif $B$, et 0 ailleurs.
+    \item $Q$ est un vecteur colonne de dimensions $k \times 1$ contenant les valeurs chiffrées de chaque opinion (les rendements attendus).
+    \item $\epsilon$ est un vecteur de termes d'erreur représentant l'incertitude des opinions. On suppose que $\epsilon \sim N(0, \Omega)$, où $\Omega$ est une matrice diagonale de dimensions $k \times k$ contenant la variance de l'erreur de chaque opinion. Un élément diagonal $\Omega_{ii}$ proche de 0 signifie une confiance absolue dans l'opinion $i$, tandis qu'une valeur élevée indique une forte incertitude.
+\end{itemize}
+
+\subsection{Étape 3 : Combinaison Bayésienne et Formulation Finale}
+En combinant le prior d'équilibre $\Pi$ et le vecteur d'opinions $Q$ sous l'hypothèse de distributions normales, la formule de Black-Litterman calcule le vecteur des rendements espérés ajustés $E(R^*)$ (le \textit{posterior}) :
+\begin{equation}
+    E(R^*) = \left[ (\tau \Sigma)^{-1} + P^T \Omega^{-1} P \right]^{-1} \left[ (\tau \Sigma)^{-1} \Pi + P^T \Omega^{-1} Q \right]
+\end{equation}
+où $\tau$ est un scalaire positif (généralement compris entre 0,025 et 0,05) qui reflète l'incertitude sur la validité du prior d'équilibre. 
+
+La nouvelle matrice de covariance ajustée $\Sigma^*$ intègre également l'incertitude sur les opinions :
+\begin{equation}
+    \Sigma^* = \Sigma + \left[ (\tau \Sigma)^{-1} + P^T \Omega^{-1} P \right]^{-1}
+\end{equation}
+Une fois le vecteur $E(R^*)$ et la matrice $\Sigma^*$ calculés, ils sont injectés dans l'optimiseur quadratique classique de Markowitz. Les allocations obtenues sont alors beaucoup plus stables, réalistes et bien diversifiées autour du portefeuille de marché, évitant les positions extrêmes.
+
+\section{Le Modèle Hierarchical Risk Parity (HRP)}
+Introduit par Marcos López de Prado en 2016, le modèle de parité des risques hiérarchique (HRP) représente une rupture méthodologique majeure en gestion de portefeuille en utilisant des techniques d'apprentissage non supervisé (clustering hiérarchique) pour structurer l'allocation.
+
+Les optimiseurs quadratiques classiques de type Markowitz considèrent la matrice de covariance comme un système d'équations homogène où tous les actifs interagissent de manière égale. De plus, ils nécessitent l'inversion de la matrice de covariance ($\Sigma^{-1}$), ce qui pose de graves problèmes numériques lorsque des actifs sont fortement corrélés (la matrice devient mal conditionnée, amplifiant le bruit d'échantillonnage). HRP résout ces problèmes en renonçant totalement à l'inversion de la matrice de covariance.
+
+Le modèle HRP se déroule en trois étapes distinctes :
+
+\subsection{Étape 1 : Le Clustering Hiérarchique (Tree Clustering)}
+L'objectif est d'organiser les actifs sous forme d'un arbre généalogique (un dendrogramme) basé sur la similarité de leurs profils de corrélation.
+Soit $R$ la matrice de corrélation de dimensions $n \times n$. On définit d'abord une métrique de distance d'information $d(i, j)$ entre les rendements des actifs $i$ et $j$ :
+\begin{equation}
+    d(i, j) = \sqrt{\frac{1 - \rho_{ij}}{2}}
+\end{equation}
+où $\rho_{ij}$ est le coefficient de corrélation de Pearson. Cette distance est comprise entre 0 (corrélation parfaite de 1) et 1 (corrélation parfaite de -1).
+
+Ensuite, on calcule la distance euclidienne $\tilde{d}(i, j)$ entre les colonnes de la matrice de distance $d$ pour évaluer la similarité globale de comportement de deux actifs par rapport à l'ensemble de l'univers d'investissement :
+\begin{equation}
+    \tilde{d}(i, j) = \sqrt{\sum_{k=1}^{n} \left( d(k, i) - d(k, j) \right)^2}
+\end{equation}
+À partir de la matrice de distance $\tilde{d}$, un algorithme de clustering hiérarchique agglomératif regroupe récursivement les actifs les plus proches pour former un arbre binaire (dendrogramme).
+
+\subsection{Étape 2 : La Quasi-Diagonalisation}
+Cette étape réorganise l'ordre des lignes et des colonnes de la matrice de covariance de sorte que les actifs appartenant aux mêmes clusters (qui se comportent de manière similaire) soient adjacents. 
+
+La matrice de corrélation réordonnée présente une structure quasi-diagonale où les corrélations les plus fortes se concentrent autour de la diagonale principale. Cette réorganisation permet de segmenter le portefeuille en blocs homogènes et d'identifier les sous-systèmes de risque de manière claire.
+
+\subsection{Étape 3 : L'Allocation Récursive (Recursive Bisection)}
+Une fois les actifs ordonnés le long de l'arbre, on procède à une allocation descendante (bisection récursive). On commence par diviser le portefeuille global en deux sous-portefeuilles $L$ (gauche) et $R$ (droit). On alloue le capital entre ces deux sous-portefeuilles en fonction de la parité de leurs variances respectives.
+
+Pour un nœud donné séparant le sous-groupe $L$ du sous-groupe $R$, la variance pondérée de chaque sous-groupe est estimée par :
+\begin{equation}
+    \sigma_L^2 = w_L^T \Sigma_L w_L \quad \text{et} \quad \sigma_R^2 = w_R^T \Sigma_R w_R
+\end{equation}
+où les poids internes $w_L$ et $w_R$ sont calculés selon la méthode classique de parité de risque inverse :
+\begin{equation}
+    w_L = \frac{\text{diag}(\Sigma_L)^{-1}}{\text{tr}(\text{diag}(\Sigma_L)^{-1})} \quad \text{et} \quad w_R = \frac{\text{diag}(\Sigma_R)^{-1}}{\text{tr}(\text{diag}(\Sigma_R)^{-1})}
+\end{equation}
+Le capital du nœud parent est ensuite réparti entre les sous-portefeuilles $L$ et $R$ via un facteur de pondération $\alpha_L$ inversement proportionnel à leur variance :
+\begin{equation}
+    \alpha_L = 1 - \frac{\sigma_L^2}{\sigma_L^2 + \sigma_R^2} \quad \text{et} \quad \alpha_R = 1 - \alpha_L
+\end{equation}
+Ce processus de division et de répartition du capital est répété récursivement le long de chaque branche de l'arbre jusqu'à ce que chaque sous-groupe ne contienne plus qu'un seul actif. 
+
+L'avantage majeur de HRP est qu'il alloue les poids de manière stable et intuitive, en protégeant le portefeuille contre la concentration excessive sur des clusters d'actifs fortement corrélés (par exemple, en évitant d'allouer trop de capital à un ensemble d'actions technologiques corrélées). De plus, l'absence de besoin d'inverser la matrice de covariance rend la méthode extrêmement robuste aux erreurs d'estimation empiriques.
+

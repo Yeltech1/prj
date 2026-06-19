@@ -114,3 +114,67 @@ Notre **stratégie hybride** propose une approche prospective (forward-looking) 
 \end{enumerate}
 
 Cette approche hybride associe le meilleur des deux mondes : la puissance prédictive non-linéaire de l'Intelligence Artificielle pour capter les tendances des prix, et la rigueur de la théorie moderne du portefeuille pour structurer le contrôle du risque global via la matrice de corrélation.
+
+\section{Autoencodeurs pour la Réduction de Dimensionnalité}
+L'un des défis majeurs de l'apprentissage automatique appliqué à la finance est la dimensionnalité élevée et le bruit extrême qui caractérisent les données de marché. Si l'on souhaite intégrer des dizaines d'indicateurs techniques (RSI, MACD, moyennes mobiles, bandes de Bollinger) pour de nombreux actifs, ainsi que des variables macroéconomiques et des données textuelles de sentiment, le modèle risque fortement de sur-apprendre (overfitting). 
+
+Les **Autoencodeurs** (Autoencoders - AE) sont des architectures de réseaux de neurones non supervisées conçues pour apprendre des représentations compressées et débruitées des données d'entrée. 
+
+\subsection{Architecture Mathématique}
+Un autoencodeur se compose de deux parties principales reliées par une couche centrale étroite, appelée le goulot d'étranglement (\textit{bottleneck}) :
+\begin{enumerate}
+    \item \textbf{L'Encodeur (Encoder) :} Il projette le vecteur de données d'entrée $x \in \mathbb{R}^d$ dans un espace latent de dimension inférieure $z \in \mathbb{R}^p$ (avec $p \ll d$) via une transformation non-linéaire :
+    \begin{equation}
+        z = g(W_e x + b_e)
+    \end{equation}
+    où $W_e$ est la matrice de poids de l'encodeur, $b_e$ le vecteur de biais et $g$ une fonction d'activation non-linéaire (ex: ReLU, ELU, Sigmoïde).
+    \item \textbf{Le Décodeur (Decoder) :} Il reconstruit le signal d'origine à partir du vecteur latent $z$ pour obtenir $\hat{x} \in \mathbb{R}^d$ :
+    \begin{equation}
+        \hat{x} = f(W_d z + b_d)
+    \end{equation}
+    où $W_d$ et $b_d$ sont les poids et biais du décodeur, et $f$ est la fonction d'activation de sortie.
+\end{enumerate}
+
+Le réseau est entraîné en minimisant une fonction de perte de reconstruction qui mesure l'écart entre l'entrée originale $x$ et sa reconstruction $\hat{x}$, comme l'erreur quadratique moyenne (MSE) :
+\begin{equation}
+    \mathcal{L}(x, \hat{x}) = \frac{1}{2} \|x - \hat{x}\|^2 = \frac{1}{2} \sum_{i=1}^{d} (x_i - \hat{x}_i)^2
+\end{equation}
+
+\subsection{Application à l'Extraction de Caractéristiques Financières}
+Contrairement à l'Analyse en Composantes Principales (ACP/PCA) classique, qui ne peut projeter les données que de manière linéaire, les autoencodeurs peuvent capturer des structures de corrélation non-linéaires complexes entre les actifs et les indicateurs.
+
+En pratique, on utilise des **Autoencodeurs de Débruitage** (Denoising Autoencoders - DAE). Lors de l'entraînement, on introduit un bruit aléatoire dans les données d'entrée ($x \rightarrow \tilde{x}$) tout en demandant au réseau de reconstruire l'entrée originale sans bruit $x$. Cette contrainte force le réseau à identifier les facteurs fondamentaux (les \textit{latent features}) qui régissent la dynamique des cours, en ignorant les fluctuations erratiques de court terme. Ces variables latentes compressées et débruitées sont ensuite fournies en entrée aux réseaux LSTM, améliorant grandement la précision de leurs prédictions temporelles.
+
+\section{L'Apprentissage par Renforcement Profond (DRL)}
+Alors que les modèles supervisés (comme le LSTM) se contentent de prédire les cours ou les rendements pour ensuite laisser un algorithme tiers prendre la décision d'allocation, l'**Apprentissage par Renforcement Profond** (Deep Reinforcement Learning - DRL) fusionne la prédiction et l'optimisation en un seul processus décisionnel de bout en bout (end-to-end).
+
+En DRL, un **Agent** apprend à interagir avec un **Environnement** (le marché financier) en prenant des **Actions** (les poids du portefeuille) afin de maximiser une **Récompense** cumulative à long terme (le rendement ajusté du risque).
+
+\subsection{Formulation comme Processus de Décision Markovien (MDP)}
+Le problème de gestion de portefeuille est formalisé sous la forme d'un Processus de Décision Markovien défini par le quadruplet $(S, A, P, R)$ :
+\begin{enumerate}
+    \item \textbf{L'État (State) $s_t \in S$ :} Représente l'état du marché à l'instant $t$. Il intègre généralement les prix et rendements historiques, des indicateurs techniques, mais aussi l'état interne de l'agent, c'est-à-dire la composition du portefeuille à l'instant précédent $w_{t-1}$.
+    \item \textbf{L'Action $a_t \in A$ :} Représente le vecteur de poids du portefeuille choisi par l'agent pour la période suivante $w_t = (w_{t,1}, \dots, w_{t,n})^T$, respectant les contraintes :
+    \begin{equation}
+        w_{t,i} \ge 0 \quad (\text{pas de vente à découvert}) \quad \text{et} \quad \sum_{i=1}^{n} w_{t,i} = 1
+    \end{equation}
+    \item \textbf{La Récompense (Reward) $R_t$ :} C'est le signal de retour envoyé par l'environnement pour évaluer la qualité de l'action $a_t$. Pour intégrer les contraintes de la réalité opérationnelle, la récompense est définie par le rendement du portefeuille net des coûts de transaction :
+    \begin{equation}
+        R_t = \sum_{i=1}^{n} w_{t,i} r_{t,i} - c \sum_{i=1}^{n} |w_{t,i} - w'_{t-1,i}|
+    \end{equation}
+    où $r_{t,i}$ est le rendement de l'actif $i$ au temps $t$, $c$ est le taux de commission de courtage (ex: 0,1\%), et $w'_{t-1,i}$ est le poids de l'actif à la fin de la période précédente avant rééquilibrage, modifié par l'évolution naturelle des cours :
+    \begin{equation}
+        w'_{t-1,i} = \frac{w_{t-1,i}(1 + r_{t-1,i})}{\sum_{j=1}^{n} w_{t-1,j}(1 + r_{t-1,j})}
+    \end{equation}
+    La récompense peut également être formulée sous forme de ratio de Sharpe incrémental pour pénaliser la prise de risque excessive.
+\end{enumerate}
+
+\subsection{Algorithmes de DRL Continus}
+L'espace des actions en gestion de portefeuille est continu (les poids peuvent prendre n'importe quelle valeur réelle entre 0 et 1). Les algorithmes classiques d'apprentissage par renforcement (comme le Q-Learning, conçu pour des espaces d'actions discrets) sont donc inadaptés. On utilise des algorithmes de type **Acteur-Critique** (Actor-Critic) profonds :
+\begin{itemize}
+    \item \textbf{Deep Deterministic Policy Gradient (DDPG) :} Un algorithme hors-politique (off-policy) qui entraîne un réseau « Acteur » pour prédire directement l'allocation optimale continue, et un réseau « Critique » pour estimer la fonction de valeur Q qui évalue la pertinence de cette allocation.
+    \item \textbf{Proximal Policy Optimization (PPO) :} Un algorithme de gradient de politique sur-politique (on-policy) plus stable, qui utilise une fonction d'objectif tronquée (clipping) pour limiter la taille des mises à jour de politique à chaque étape d'entraînement, évitant ainsi les effondrements de performance.
+\end{itemize}
+
+Le DRL présente un avantage théorique immense : il apprend à optimiser le portefeuille directement sous l'effet de contraintes réalistes (coûts de transaction, impact sur le marché, taxes) sans nécessiter d'hypothèses simplificatrices sur la distribution des rendements, offrant ainsi une alternative très dynamique à l'optimisation classique.
+
